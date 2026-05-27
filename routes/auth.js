@@ -274,91 +274,56 @@ router.post(
   "/login",
 
   async (req, res) => {
-
     try {
-
-      const email =
-      req.body.email.toLowerCase();
-
-      const password =
-      req.body.password;
-
-
-      // ================= ADMIN LOGIN =================
-
-      const admin =
-      await Admin.findOne({
-        email
-      });
-      
-
-      if(admin) {
-
-        if(admin.password !== password) {
-
-          return res.status(400).json({
-            message:
-            "Wrong password"
-          });
-
-        }
-        admin.lastLogin =
-new Date();
-
-await admin.save();
-
-        return res.json({
-
-          token: "admin-token",
-
-          role: "admin",
-
-          user: {
-
-            name:
-            admin.name,
-
-            email:
-            admin.email,
-
-            role:
-            admin.role,
-
-            designation:
-            admin.designation
-
-          }
-
-        });
-
+      console.log("[LOGIN] Incoming request body:", req.body);
+      if (!req.body.email || !req.body.password) {
+        console.log("[LOGIN] Error: Missing email or password");
+        return res.status(400).json({ message: "Please fill in all fields" });
       }
 
+      const email = req.body.email.toLowerCase();
+      const password = req.body.password;
+      console.log("[LOGIN] Incoming email:", email);
+
+      // ================= ADMIN LOGIN =================
+      const admin = await Admin.findOne({ email });
+      if(admin) {
+        console.log("[LOGIN] Admin found:", admin.email);
+        if(admin.password !== password) {
+          console.log("[LOGIN] Admin login failed: Wrong password");
+          return res.status(400).json({
+            message: "Wrong password"
+          });
+        }
+        admin.lastLogin = new Date();
+        await admin.save();
+
+        console.log("[LOGIN] Admin login successful:", admin.email);
+        return res.json({
+          token: "admin-token",
+          role: "admin",
+          user: {
+            name: admin.name,
+            email: admin.email,
+            role: admin.role,
+            designation: admin.designation
+          }
+        });
+      }
 
       // ================= RESIDENT LOGIN =================
+      const user = await User.findOne({ email });
+      if(!user) {
+        console.log("[LOGIN] User found: false");
+        return res.status(400).json({ message: "User not found" });
+      }
+      console.log("[LOGIN] User found: true");
 
-      const user =
-      await User.findOne({
-        email
-      });
-
-      if(!user)
-
-        return res
-        .status(400)
-        .json("User not found");
-
-
-      const isMatch =
-      await bcrypt.compare(
-        password,
-        user.password
-      );
-
-      if(!isMatch)
-
-        return res
-        .status(400)
-        .json("Wrong password");
+      const isMatch = await bcrypt.compare(password, user.password);
+      console.log("[LOGIN] Password comparison result:", isMatch);
+      if(!isMatch) {
+        return res.status(400).json({ message: "Wrong password" });
+      }
 
 
       const resident =

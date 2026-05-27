@@ -18,6 +18,10 @@ new mongoose.Schema({
     required: true,
   },
 
+  apartmentNumber: {
+    type: String,
+  },
+
   title: {
     type: String,
     required: true,
@@ -43,11 +47,11 @@ new mongoose.Schema({
     default: "Pending",
   },
 
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-
+  adminNote: {
+    type: String,
+  }
+}, {
+  timestamps: true
 });
 
 module.exports =
