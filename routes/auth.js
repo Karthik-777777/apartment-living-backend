@@ -299,8 +299,15 @@ router.post(
         await admin.save();
 
         console.log("[LOGIN] Admin login successful:", admin.email);
+        const token = jwt.sign(
+          {
+            id: admin._id,
+            role: admin.role || "admin"
+          },
+          process.env.JWT_SECRET
+        );
         return res.json({
-          token: "admin-token",
+          token,
           role: "admin",
           user: {
             name: admin.name,
