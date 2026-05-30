@@ -240,7 +240,7 @@ router.post(
         "",
 
         status:
-        "Pending"
+        "pending"
 
       });
 
