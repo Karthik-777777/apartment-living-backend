@@ -84,6 +84,11 @@ app.use(
   adminRoutes
 );
 
+app.use(
+  "/api/analytics",
+  require("./routes/analytics")
+);
+
 
 // Test Route
 app.get("/", (req, res) => {
