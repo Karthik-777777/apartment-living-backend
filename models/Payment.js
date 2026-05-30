@@ -134,7 +134,16 @@ totalAmount: {
   type: Number,
   required: true,
 },
-
+amount: {
+  type: Number,
+},
+year: {
+  type: String,
+},
+generatedDate: {
+  type: Date,
+  default: Date.now,
+},
   });
 
   
